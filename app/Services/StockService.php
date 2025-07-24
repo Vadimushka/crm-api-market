@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Models\Product;
 use App\Models\Stock;
+use App\Models\StockMovement;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class StockService
 {
@@ -45,9 +47,13 @@ class StockService
      */
     public function decrementStock(int $productId, int $warehouseId, int $count): void
     {
-        Stock::where('product_id', $productId)
-            ->where('warehouse_id', $warehouseId)
-            ->decrement('stock', $count);
+        DB::transaction(function () use ($productId, $warehouseId, $count) {
+            Stock::where('product_id', $productId)
+                ->where('warehouse_id', $warehouseId)
+                ->decrement('stock', $count);
+
+            $this->recordMovement($productId, $warehouseId, -$count, 'order_completed');
+        });
     }
 
     /**
@@ -60,9 +66,25 @@ class StockService
      */
     public function incrementStock(int $productId, int $warehouseId, int $count): void
     {
-        Stock::where('product_id', $productId)
-            ->where('warehouse_id', $warehouseId)
-            ->increment('stock', $count);
+        DB::transaction(function () use ($productId, $warehouseId, $count) {
+            Stock::where('product_id', $productId)
+                ->where('warehouse_id', $warehouseId)
+                ->increment('stock', $count);
+
+            $this->recordMovement($productId, $warehouseId, $count, 'order_canceled');
+        });
+    }
+
+    public function recordMovement($productId, $warehouseId, $amount, $operationType, $operationId = null, $description = null): void
+    {
+        StockMovement::create([
+            'product_id' => $productId,
+            'warehouse_id' => $warehouseId,
+            'amount' => $amount,
+            'operation_type' => $operationType,
+            'operation_id' => $operationId,
+            'description' => $description,
+        ]);
     }
 
 }

@@ -71,6 +71,16 @@ class OrderController extends Controller
                 );
 
                 $order->items()->create($item);
+
+                // Записываем резервирование товара
+                $this->stockService->recordMovement(
+                    $item['product_id'],
+                    $request->warehouse_id,
+                    -$item['count'],
+                    'order_created',
+                    $order->id,
+                    "Резервирование товара для заказа #{$order->id}"
+                );
             }
 
             DB::commit();
