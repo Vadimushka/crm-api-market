@@ -8,7 +8,6 @@ use App\Http\Requests\OrderUpdateRequest;
 use App\Http\Resources\OrderCollection;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
-use App\Models\Product;
 use App\Models\Stock;
 use App\Services\StockService;
 use Illuminate\Http\JsonResponse;
@@ -60,7 +59,7 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
 
-            $order = Order::create($request->only(['customer', 'warehouse_id']));
+            $order = Order::create($request->only(['customer', 'warehouse_id']) + ['status' => OrderStatus::ACTIVE->value]);
 
             foreach ($request->get('items') as $item) {
 

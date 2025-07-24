@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('customer', 255);
-            $table->timestamp('created_at')->useCurrent();
             $table->timestamp('completed_at')->nullable();
             $table->foreignId('warehouse_id')->constrained();
             $table->enum('status', [
@@ -24,6 +23,7 @@ return new class extends Migration
                 OrderStatus::COMPLETED->value,
                 OrderStatus::CANCELLED->value
             ])->default(OrderStatus::ACTIVE->value);
+            $table->timestamps();
         });
     }
 

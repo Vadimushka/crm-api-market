@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\OrderStatus;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,6 +23,8 @@ use Illuminate\Support\Carbon;
 class Order extends Model
 {
 
+    use HasFactory;
+
     /** @var array $fillable Поля, доступные для массового заполнения */
     protected $fillable = ['customer', 'warehouse_id', 'status', 'completed_at'];
 
@@ -37,16 +40,11 @@ class Order extends Model
     public function scopeFilter(Builder $query, array $filters): Builder
     {
         return $query
-            // Фильтр по статусу
-            ->when($filters['status'] ?? null, fn($query, $status) => $query->where('status', $status))
-            // Фильтр по складу
-            ->when($filters['warehouse_id'] ?? null, fn($query, $warehouseId) => $query->where('warehouse_id', $warehouseId))
-            // Фильтр по дате от
-            ->when($filters['date_from'] ?? null, fn($query, $date) => $query->where('created_at', '=>', $date))
-            // Фильтр по дате до
-            ->when($filters['date_to'] ?? null, fn($query, $date) => $query->where('created_at', '<=', $date))
-            // Поиск по клиенту
-            ->when($filters['search'] ?? null, fn($query, $search) => $query->where('customer', 'like', '%' . $search . '%'));
+            ->when($filters['status'] ?? null, fn($query, $status) => $query->where('status', $status)) // Фильтр по статусу
+            ->when($filters['warehouse_id'] ?? null, fn($query, $warehouseId) => $query->where('warehouse_id', $warehouseId)) // Фильтр по складу
+            ->when($filters['date_from'] ?? null, fn($query, $date) => $query->where('created_at', '>=', $date)) // Фильтр по дате от
+            ->when($filters['date_to'] ?? null, fn($query, $date) => $query->where('created_at', '<=', $date)) // Фильтр по дате до
+            ->when($filters['search'] ?? null, fn($query, $search) => $query->where('customer', 'like', '%' . $search . '%')); // Поиск по клиенту
     }
 
     /**
