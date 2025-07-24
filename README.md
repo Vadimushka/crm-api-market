@@ -34,7 +34,11 @@ php artisan key:generate
 ```shell
 php artisan migrate --seed
 ```
-6. Запустить сервер разработки:
+6. Запустить для заполнения тестовыми данными:
+```shell
+php app:seed-test-data
+```
+7. Запустить сервер разработки:
 ```shell
 php artisan serve
 ```

@@ -1,5 +1,6 @@
 <?php
 
+use App\Console\Commands\SeedTestData as SeedTestDataAlias;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
