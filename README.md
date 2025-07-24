@@ -154,6 +154,8 @@ curl -X POST http://localhost:8000/api/orders/1/complete \
 
 ## Тестирование
 
+Не забудьте указать название базы в phpunit.xml
+
 Для запуска тестов:
 
 ```shell
